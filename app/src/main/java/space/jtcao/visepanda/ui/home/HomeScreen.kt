@@ -65,7 +65,7 @@ fun HomeScreen(
         when (val state = uiState) {
             is HomeUiState.Loading -> LoadingContent()
             is HomeUiState.Success -> HomeContent(
-                cities = state.cities,
+                topCities = state.cities.take(8),
                 onCityClick = onCityClick,
                 onStartChat = onStartChat
             )
@@ -79,12 +79,11 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    cities: List<City>,
+    topCities: List<Pair<String, City>>,
     onCityClick: (String) -> Unit,
     onStartChat: () -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val topCities = cities.take(8) // Show top 8 on home
 
     Column(
         modifier = Modifier
@@ -104,7 +103,7 @@ private fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Text(
-            text = "${cities.size} destinations across China",
+            text = "${topCities.size}+ destinations across China",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 12.dp)
@@ -118,14 +117,13 @@ private fun HomeContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize(),
-            // LazyGrid needs a fixed height or it won't scroll inside ScrollState
-            // We calculate approximate height: (cities/2 rounded up) * (card_height + gap)
-            userScrollEnabled = false // nested scroll handled by parent Column
+            userScrollEnabled = false
         ) {
-            items(topCities, key = { it.name }) { city ->
+            items(topCities, key = { it.first }) { (name, city) ->
                 CityCard(
+                    name = name,
                     city = city,
-                    onClick = { onCityClick(city.name) }
+                    onClick = { onCityClick(name) }
                 )
             }
         }
@@ -245,6 +243,7 @@ private fun HeroSection(onStartChat: () -> Unit) {
 
 @Composable
 private fun CityCard(
+    name: String,
     city: City,
     onClick: () -> Unit
 ) {
@@ -263,8 +262,8 @@ private fun CityCard(
             // Background image
             if (city.image.isNotEmpty()) {
                 AsyncImage(
-                    model = CityRepository().getCityImageUrl(city.name),
-                    contentDescription = city.name,
+                    model = CityRepository().getCityImageUrl(name),
+                    contentDescription = name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -305,7 +304,7 @@ private fun CityCard(
             ) {
                 // Emoji
                 Text(
-                    text = getCityEmoji(city.name),
+                    text = getCityEmoji(name),
                     style = MaterialTheme.typography.headlineLarge
                 )
 
@@ -313,7 +312,7 @@ private fun CityCard(
 
                 // City name
                 Text(
-                    text = city.name.replaceFirstChar { it.uppercase() },
+                    text = name.replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,

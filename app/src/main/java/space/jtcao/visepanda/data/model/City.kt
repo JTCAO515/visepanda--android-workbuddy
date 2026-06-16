@@ -4,80 +4,107 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * City summary — from GET /api/cities
+ * City summary — from GET /api/cities map values.
+ *
+ * Each city object in the response map has these fields.
+ * The `name` key is the city's slug (e.g. "beijing").
  */
 @Serializable
 data class City(
-    @SerialName("name") val name: String,           // e.g. "beijing"
-    @SerialName("name_cn") val nameCn: String = "",  // e.g. "北京"
+    @SerialName("name_cn") val nameCn: String = "",
     @SerialName("province") val province: String = "",
     @SerialName("best_season") val bestSeason: String = "",
     @SerialName("days") val days: String = "",
     @SerialName("vibe") val vibe: String = "",
-    @SerialName("highlights") val highlights: String = "",
+    @SerialName("highlights") val highlights: List<String> = emptyList(),
     @SerialName("budget_tip") val budgetTip: String = "",
-    @SerialName("image") val image: String = ""      // "/static/img/city-beijing.jpg"
+    @SerialName("image") val image: String = ""
 )
 
 /**
- * City detail — from GET /api/cities/{city}
+ * Wrapper for GET /api/cities/{city} response.
+ * The API returns everything nested under a "city" key.
+ */
+@Serializable
+data class CityDetailResponse(
+    @SerialName("city") val city: CityDetail
+)
+
+/**
+ * City detail — returned from GET /api/cities/{city}.
+ * Contains all fields from City plus nested data.
  */
 @Serializable
 data class CityDetail(
-    @SerialName("city") val city: City = City(""),
-    @SerialName("attractions") val attractions: List<Attraction> = emptyList(),
+    @SerialName("name_cn") val nameCn: String = "",
+    @SerialName("province") val province: String = "",
+    @SerialName("best_season") val bestSeason: String = "",
+    @SerialName("days") val days: String = "",
+    @SerialName("vibe") val vibe: String = "",
+    @SerialName("highlights") val highlights: List<String> = emptyList(),
+    @SerialName("budget_tip") val budgetTip: String = "",
+    @SerialName("image") val image: String = "",
+    @SerialName("estimate") val estimate: PriceEstimate = PriceEstimate(),
     @SerialName("food") val food: List<FoodItem> = emptyList(),
-    @SerialName("hotels") val hotels: List<HotelSuggestion> = emptyList(),
-    @SerialName("tips") val tips: Tips = Tips(),
-    @SerialName("estimates") val estimates: PriceEstimate = PriceEstimate()
+    @SerialName("hotels") val hotels: HotelData = HotelData(),
+    @SerialName("tips") val tips: List<TipItem> = emptyList(),
+    @SerialName("map") val mapData: MapData = MapData()
 )
 
+// ── Nested models ──
+
 @Serializable
-data class Attraction(
-    @SerialName("name") val name: String = "",
-    @SerialName("name_cn") val nameCn: String = "",
-    @SerialName("type") val type: String = "",
-    @SerialName("description") val description: String = "",
-    @SerialName("price") val price: String = "",
-    @SerialName("time") val time: String = "",
-    @SerialName("tips") val tips: String = "",
-    @SerialName("rating") val rating: Double = 0.0
+data class PriceEstimate(
+    @SerialName("budget_daily") val budgetDaily: String = "",
+    @SerialName("mid_daily") val midDaily: String = "",
+    @SerialName("luxury_daily") val luxuryDaily: String = "",
+    @SerialName("flight_avg") val flightAvg: String = "",
+    @SerialName("food_avg") val foodAvg: String = ""
 )
 
 @Serializable
 data class FoodItem(
-    @SerialName("name") val name: String = "",
+    @SerialName("name_en") val nameEn: String = "",
     @SerialName("name_cn") val nameCn: String = "",
     @SerialName("description") val description: String = "",
     @SerialName("price_range") val priceRange: String = "",
-    @SerialName("must_try") val mustTry: Boolean = false,
-    @SerialName("rating") val rating: Double = 0.0
+    @SerialName("must_try") val mustTry: Boolean = false
 )
 
 @Serializable
-data class HotelSuggestion(
-    @SerialName("area") val area: String = "",
-    @SerialName("area_cn") val areaCn: String = "",
-    @SerialName("price_range") val priceRange: String = "",
-    @SerialName("description") val description: String = "",
-    @SerialName("pros") val pros: String = ""
+data class HotelData(
+    @SerialName("budget") val budget: HotelTier = HotelTier(),
+    @SerialName("mid") val mid: HotelTier = HotelTier(),
+    @SerialName("luxury") val luxury: HotelTier = HotelTier(),
+    @SerialName("tip") val tip: String = ""
 )
 
 @Serializable
-data class Tips(
-    @SerialName("transport") val transport: String = "",
-    @SerialName("best_time") val bestTime: String = "",
-    @SerialName("language") val language: String = "",
-    @SerialName("culture") val culture: String = "",
-    @SerialName("safety") val safety: String = "",
-    @SerialName("local_tips") val localTips: String = ""
+data class HotelTier(
+    @SerialName("range") val range: String = "",
+    @SerialName("desc") val desc: String = "",
+    @SerialName("areas") val areas: String = ""
 )
 
 @Serializable
-data class PriceEstimate(
-    @SerialName("budget") val budget: String = "",
-    @SerialName("mid_range") val midRange: String = "",
-    @SerialName("luxury") val luxury: String = "",
-    @SerialName("daily_avg") val dailyAvg: String = "",
-    @SerialName("currency") val currency: String = "CNY"
+data class TipItem(
+    @SerialName("en") val en: String = "",
+    @SerialName("tip") val tip: String = ""
+)
+
+@Serializable
+data class MapData(
+    @SerialName("lat") val lat: Double = 0.0,
+    @SerialName("lng") val lng: Double = 0.0,
+    @SerialName("zoom") val zoom: Int = 11,
+    @SerialName("pois") val pois: List<PoiItem> = emptyList()
+)
+
+@Serializable
+data class PoiItem(
+    @SerialName("name") val name: String = "",
+    @SerialName("name_cn") val nameCn: String = "",
+    @SerialName("lat") val lat: Double = 0.0,
+    @SerialName("lng") val lng: Double = 0.0,
+    @SerialName("type") val type: String = ""
 )

@@ -14,7 +14,7 @@ import space.jtcao.visepanda.data.repository.CityRepository
  */
 sealed class HomeUiState {
     data object Loading : HomeUiState()
-    data class Success(val cities: List<City>) : HomeUiState()
+    data class Success(val cities: List<Pair<String, City>>) : HomeUiState()
     data class Error(val message: String) : HomeUiState()
 }
 
