@@ -56,7 +56,7 @@ import coil.compose.AsyncImage
 import space.jtcao.visepanda.data.model.City
 import space.jtcao.visepanda.data.model.CityDetail
 import space.jtcao.visepanda.data.model.FoodItem
-import space.jtcao.visepanda.data.repository.CityRepository
+import space.jtcao.visepanda.data.api.ApiConfig
 import space.jtcao.visepanda.ui.home.getCityEmoji
 
 // ═════════════════════════════════════════════════
@@ -126,7 +126,7 @@ private fun CityCardSmall(
         Box(modifier = Modifier.fillMaxSize()) {
             if (city.image.isNotEmpty()) {
                 AsyncImage(
-                    model = CityRepository().getCityImageUrl(name),
+                    model = "${ApiConfig.BASE_URL}/static/img/city-$name.jpg",
                     contentDescription = name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()

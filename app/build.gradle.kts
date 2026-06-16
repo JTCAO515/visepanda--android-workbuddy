@@ -31,6 +31,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("visepanda-release.keystore")
+            storePassword = project.findProperty("KEYSTORE_PASSWORD") as String? ?: "visepanda2024"
+            keyAlias = "visepanda"
+            keyPassword = project.findProperty("KEY_PASSWORD") as String? ?: "visepanda2024"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -38,7 +47,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

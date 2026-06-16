@@ -6,13 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import space.jtcao.visepanda.data.api.ApiConfig
-import space.jtcao.visepanda.data.model.ToolItem
-import space.jtcao.visepanda.data.model.ToolContent
-import java.net.URL
+import space.jtcao.visepanda.data.repository.ToolsRepository
 
 data class ToolEntry(val name: String, val description: String)
 data class ToolDetail(val name: String, val title: String, val sections: List<ToolSection>)
@@ -26,7 +20,7 @@ sealed class ToolsUiState {
 
 class ToolsViewModel : ViewModel() {
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val repository = ToolsRepository()
 
     private val _uiState = MutableStateFlow<ToolsUiState>(ToolsUiState.Loading)
     val uiState: StateFlow<ToolsUiState> = _uiState.asStateFlow()
@@ -37,17 +31,11 @@ class ToolsViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = ToolsUiState.Loading
             try {
-                val url = URL("${ApiConfig.BASE_URL}/api/tools")
-                val response = url.readText()
-                val root = json.parseToJsonElement(response).jsonObject
-                val toolsObj = root["tools"]?.jsonObject ?: run {
-                    _uiState.value = ToolsUiState.Error("No tools found")
-                    return@launch
+                val tools = repository.getTools()
+                val entries = tools.entries.map { (name, desc) ->
+                    ToolEntry(name = name, description = desc)
                 }
-                val tools = toolsObj.entries.map { (name, element) ->
-                    ToolEntry(name = name, description = element.jsonPrimitive.content)
-                }
-                _uiState.value = ToolsUiState.Success(tools)
+                _uiState.value = ToolsUiState.Success(entries)
             } catch (e: Exception) {
                 _uiState.value = ToolsUiState.Error(e.message ?: "Failed to load tools")
             }

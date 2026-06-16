@@ -6,33 +6,37 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import space.jtcao.visepanda.data.model.AppConfig
-import space.jtcao.visepanda.data.model.City
-import space.jtcao.visepanda.data.model.CityDetail
-import space.jtcao.visepanda.data.model.MapData
-import space.jtcao.visepanda.data.model.ToolItem
+import space.jtcao.visepanda.data.model.CitiesResponse
+import space.jtcao.visepanda.data.model.CityDetailResponse
+import space.jtcao.visepanda.data.model.MapApiResponse
+import space.jtcao.visepanda.data.model.ToolsResponse
 
 /**
  * VisePanda REST API — Retrofit interface.
  *
  * All endpoints served from Vercel (WSGI Python backend).
+ * Response types now match actual API response shapes:
+ *   - /api/cities → { cities: { slug: City, ... } }
+ *   - /api/map    → { cities: [MapMarker, ...] }
+ *   - /api/tools  → { tools: { name: desc, ... } }
  */
 interface VisePandaApi {
 
-    /** List all 36 cities */
+    /** List all 36 cities — returns map { slug → City } */
     @GET("/api/cities")
-    suspend fun getCities(): List<City>
+    suspend fun getCities(): CitiesResponse
 
     /** Get city detail with attractions, food, hotels, tips, estimates */
     @GET("/api/cities/{city}")
-    suspend fun getCityDetail(@Path("city") city: String): CityDetail
+    suspend fun getCityDetail(@Path("city") city: String): CityDetailResponse
 
     /** Get full China map data with all city markers */
     @GET("/api/map")
-    suspend fun getMapData(): MapData
+    suspend fun getMapData(): MapApiResponse
 
     /** List all travel tools */
     @GET("/api/tools")
-    suspend fun getTools(): List<ToolItem>
+    suspend fun getTools(): ToolsResponse
 
     /** Get app configuration */
     @GET("/api/config")

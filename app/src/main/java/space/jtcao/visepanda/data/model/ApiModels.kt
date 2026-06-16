@@ -25,6 +25,24 @@ data class MapApiResponse(
 )
 
 /**
+ * API response wrapper for `/api/cities` endpoint.
+ * Returns a map: { slug → City }.
+ */
+@Serializable
+data class CitiesResponse(
+    @SerialName("cities") val cities: Map<String, City> = emptyMap()
+)
+
+/**
+ * API response wrapper for `/api/tools` endpoint.
+ * Returns a map: { tool_name → description }.
+ */
+@Serializable
+data class ToolsResponse(
+    @SerialName("tools") val tools: Map<String, String> = emptyMap()
+)
+
+/**
  * App configuration returned by GET /api/config.
  */
 @Serializable

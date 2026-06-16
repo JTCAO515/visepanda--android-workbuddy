@@ -1,29 +1,27 @@
 package space.jtcao.visepanda.data.repository
 
-import kotlinx.serialization.json.Json
-import space.jtcao.visepanda.data.api.ApiConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import space.jtcao.visepanda.data.api.ApiClient
 import space.jtcao.visepanda.data.model.AppConfig
-import space.jtcao.visepanda.data.model.ToolItem
-import java.net.URL
 
 /**
  * Repository for travel tools and app configuration.
+ *
+ * Now uses Retrofit — no more blocking URL.readText().
  */
 class ToolsRepository {
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val api = ApiClient.api
 
-    /** Fetch all travel tools (packing list, visa info, phrases, etc.) */
-    suspend fun getTools(): List<ToolItem> {
-        val url = URL("${ApiConfig.BASE_URL}/api/tools")
-        val response = url.readText()
-        return json.decodeFromString(response)
+    /** Fetch all travel tools — returns map { name → description } */
+    suspend fun getTools(): Map<String, String> = withContext(Dispatchers.IO) {
+        val response = api.getTools()
+        response.tools
     }
 
     /** Fetch app configuration */
-    suspend fun getConfig(): AppConfig {
-        val url = URL("${ApiConfig.BASE_URL}/api/config")
-        val response = url.readText()
-        return json.decodeFromString(response)
+    suspend fun getConfig(): AppConfig = withContext(Dispatchers.IO) {
+        api.getConfig()
     }
 }

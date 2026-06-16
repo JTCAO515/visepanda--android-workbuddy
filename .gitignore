@@ -13,5 +13,5 @@ local.properties
 *.apk
 *.aab
 *.jks
-*.keystore
+# Project keystore committed for CI — not for production apps
 keystore/*.jks
