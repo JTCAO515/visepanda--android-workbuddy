@@ -1,6 +1,7 @@
 package space.jtcao.visepanda.ui.tools
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,16 +35,11 @@ private val TOOL_EMOJIS = mapOf(
     "emergency" to "🆘"
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolsScreen(viewModel: ToolsViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
-    PullToRefreshBox(
-        isRefreshing = uiState is ToolsUiState.Loading,
-        onRefresh = { viewModel.load() },
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         when (val state = uiState) {
             is ToolsUiState.Loading -> LoadingTools()
             is ToolsUiState.Success -> ToolsGrid(state.tools)

@@ -36,7 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -69,11 +69,7 @@ fun CityListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    PullToRefreshBox(
-        isRefreshing = uiState is CityListUiState.Loading,
-        onRefresh = { viewModel.load() },
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         when (val state = uiState) {
             is CityListUiState.Loading -> LoadingGrid()
             is CityListUiState.Success -> CityGrid(
