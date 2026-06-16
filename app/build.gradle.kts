@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "space.jtcao.visepanda"
+    namespace = "space.jtcao.vpworkbuddy"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "space.jtcao.visepanda"
+        applicationId = "space.jtcao.vpworkbuddy"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "3.0.8"
+        versionName = "0.2.0"
     }
 
     buildFeatures {
