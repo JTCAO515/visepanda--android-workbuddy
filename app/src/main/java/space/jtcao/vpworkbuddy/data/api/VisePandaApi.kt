@@ -1,54 +1,37 @@
 package space.jtcao.vpworkbuddy.data.api
 
-import kotlinx.serialization.json.JsonObject
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import space.jtcao.vpworkbuddy.data.model.AppConfig
-import space.jtcao.vpworkbuddy.data.model.CitiesResponse
-import space.jtcao.vpworkbuddy.data.model.CityDetailResponse
-import space.jtcao.vpworkbuddy.data.model.MapApiResponse
-import space.jtcao.vpworkbuddy.data.model.ToolsResponse
+import kotlinx.serialization.json.JsonObject
 
 /**
  * VisePanda REST API — Retrofit interface.
  *
- * All endpoints served from Vercel (WSGI Python backend).
- * Response types now match actual API response shapes:
- *   - /api/cities → { cities: { slug: City, ... } }
- *   - /api/map    → { cities: [MapMarker, ...] }
- *   - /api/tools  → { tools: { name: desc, ... } }
+ * All endpoints return raw ResponseBody — deserialization is done in repositories
+ * to avoid converter compatibility issues (the jakewharton serialization converter
+ * has known problems with newer Kotlin versions).
  */
 interface VisePandaApi {
 
-    /** List all 36 cities — returns map { slug → City } */
     @GET("/api/cities")
-    suspend fun getCities(): CitiesResponse
+    suspend fun getCities(): Response<ResponseBody>
 
-    /** Get city detail with attractions, food, hotels, tips, estimates */
     @GET("/api/cities/{city}")
-    suspend fun getCityDetail(@Path("city") city: String): CityDetailResponse
+    suspend fun getCityDetail(@Path("city") city: String): Response<ResponseBody>
 
-    /** Get full China map data with all city markers */
     @GET("/api/map")
-    suspend fun getMapData(): MapApiResponse
+    suspend fun getMapData(): Response<ResponseBody>
 
-    /** List all travel tools */
     @GET("/api/tools")
-    suspend fun getTools(): ToolsResponse
+    suspend fun getTools(): Response<ResponseBody>
 
-    /** Get app configuration */
     @GET("/api/config")
-    suspend fun getConfig(): AppConfig
+    suspend fun getConfig(): Response<ResponseBody>
 
-    /**
-     * Chat endpoint — returns SSE stream.
-     * NOTE: This is NOT called directly via Retrofit.
-     * SSE streaming uses SseClient (OkHttp raw) instead.
-     */
     @POST("/api/chat")
-    suspend fun chat(
-        @Body body: JsonObject
-    ): retrofit2.Response<okhttp3.ResponseBody>
+    suspend fun chat(@Body body: JsonObject): Response<ResponseBody>
 }

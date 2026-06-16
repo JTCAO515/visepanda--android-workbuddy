@@ -1,22 +1,18 @@
 package space.jtcao.vpworkbuddy.data.api
 
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 
 /**
  * Singleton Retrofit client — shared across all repositories.
+ *
+ * Uses raw ResponseBody (no converter) to avoid serialization library
+ * compatibility issues. Deserialization is done manually via kotlinx.serialization
+ * in each repository.
  */
 object ApiClient {
-
-    private val json = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
-    }
 
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -35,7 +31,6 @@ object ApiClient {
         Retrofit.Builder()
             .baseUrl(ApiConfig.BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
 
