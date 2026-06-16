@@ -1,8 +1,9 @@
-# VisePanda-Android v0.1.0 — Handoff Document
+# VisePanda-Android v0.2.0 — Handoff Document
 
-> **Last Updated:** 2026-06-16 22:40
-> **Status:** ✅ GitHub Actions 构建通过，APK 可下载（服务器下载超时）
-> **Repo:** `git@github.com:JTCAO515/VisePanda-Android.git`
+> **Last Updated:** 2026-06-16 23:20
+> **Status:** ✅ P0/P1 优化完成，代码已推送到新仓库
+> **Repo:** `git@github.com:JTCAO515/visepanda--android-workbuddy.git`
+> **Original Repo:** `git@github.com:JTCAO515/VisePanda-Android.git`
 > **Live URL:** 原生 App — 无线上部署
 > **Agent Memory Key:** VisePanda-Android
 
@@ -277,3 +278,34 @@ MainActivity
 *End of Handoff.*
 
 *如果恢复项目：加载 `project-iteration` skill，读 HANDOFF.md，然后检查 GitHub Actions 最新构建状态。*
+
+---
+
+## 13. v0.2.0 变更记录 (2026-06-16)
+
+### P0 修复
+| 问题 | 修复 |
+|------|------|
+| Release APK 使用 debug 签名 | 创建 `app/visepanda-release.keystore`，独立 signingConfig |
+| URL.readText() 主线程网络 I/O | 所有 Repository 迁移到 Retrofit + Dispatchers.IO |
+| Retrofit 完全未使用 | 创建 ApiClient 单例，CityRepository/MapRepository/ToolsRepository 统一使用 Retrofit |
+| 聊天记录无持久化 | ChatViewModel → AndroidViewModel + DataStore 持久化 |
+
+### P1 修复
+| 问题 | 修复 |
+|------|------|
+| CityDetail "Plan a Trip" 空实现 | 添加 onStartChat 回调 → 导航到 Chat(city) |
+| TripsScreen "Start Planning" 空实现 | 添加 onStartChat 回调 → 导航到 Chat |
+| Chat 图片只显示占位文本 | 改用 AsyncImage (Coil) 渲染实际图片 |
+| MarkdownText 不支持代码块/表格 | 支持 ``` 代码块 和 `|` 表格语法 |
+| SseClient JSON 字符串拼接 | 改用 kotlinx.serialization buildJsonObject |
+| ToolsViewModel 绕过 Repository | 改用 ToolsRepository |
+
+### 新增
+- `ApiClient.kt` — Retrofit 单例客户端
+- `CitiesResponse`, `ToolsResponse` — API 响应模型
+- CI: lint job + 自动递增 versionCode (基于 GitHub run_number)
+- ChatMessage/ChatImage/ChatFaq 标记为 @Serializable
+
+### 删除
+- `escapeJson()` — 不再需要手动 JSON 转义
