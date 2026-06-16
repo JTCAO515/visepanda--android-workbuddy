@@ -29,7 +29,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import space.jtcao.visepanda.data.model.MapMarker
-import space.jtcao.visepanda.data.model.MapMarker
 
 /**
  * Full China map with 36 city markers using osmdroid.
